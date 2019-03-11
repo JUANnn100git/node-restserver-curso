@@ -14,7 +14,7 @@ app.get('/usuario', function(req, res) {
     let limite = req.query.limite || 5;
     limite = Number(limite);
 
-    Usuario.find({})
+    Usuario.find({ estado: true })
         .skip(desde)
         .limit(limite)
         .exec((err, usuarios) => {
@@ -26,7 +26,7 @@ app.get('/usuario', function(req, res) {
                 });
             }
 
-            Usuario.countDocuments({}, (err, conteo) => {
+            Usuario.countDocuments({ estado: true }, (err, conteo) => {
                 res.json({
                     ok: true,
                     cuantos: conteo,
@@ -100,11 +100,11 @@ app.delete('/usuario/:id', function(req, res) {
 
     let id = req.params.id;
 
-    let body = req.body;
+    let cambiaEstado = {
+        estado: false
+    }
 
-    body.estado = false;
-
-    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, usuarioInactivado) => {
+    Usuario.findByIdAndUpdate(id, cambiaEstado, { new: true, runValidators: true }, (err, usuarioInactivado) => {
 
         if (err) {
             return res.status(400).json({
